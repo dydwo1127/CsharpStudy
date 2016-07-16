@@ -10,64 +10,97 @@ namespace ConsoleApplication2
     {
         static void Main(string[] args)
         {
-            int n = 5;
-            int[] circle = new int[n];
-            for(int i = 0; i < n; i++)
-            {
-                circle[i] = i + 1;
-            }
+            Console.Write("원판의 갯수 : ");
+            int n = Convert.ToInt32(Console.ReadLine());
             int[] towerA = new int[n];
             int[] towerB = new int[n];
             int[] towerC = new int[n];
-
-            towerA = circle;
-
+            for(int i = 0; i<n; i++)
+            {
+                towerA[i] = i + 1;
+            }
+            int move = 0 ;
             DrawHanoi(n, towerA, towerB, towerC);
+            MoveDisk(n,n, towerA, towerB, towerC,towerA, towerB, towerC, ref move);
         }
 
         static void DrawHanoi(int n, int[] towerA, int[] towerB, int[] towerC)
         {
             for (int i = 0; i < n; i++)
             {
-                for (int j = 1; j <= 39; j++)
+                DrawOneDisk(n, towerA[i]);
+                DrawOneDisk(n, towerB[i]);
+                DrawOneDisk(n, towerC[i]);
+                Console.WriteLine("");
+            }
+        }
+        
+        static void DrawOneDisk(int maxdisknumber, int disktodraw)
+        {
+            for (int i = 0; i < 2 * maxdisknumber +3 ; i++)
+            {
+                if(i<maxdisknumber-disktodraw+1 || i > maxdisknumber + disktodraw +1)
                 {
-                    if(j <= 6 - towerA[i])
-                    {
-                        Console.Write(" ");
-                    }
-                    if(j > 6 - towerA[i] && j <= 7 + towerA[i] && j != 7)
-                    {
-                        Console.Write("*");
-                    }
-                    if(j > 7 + towerA[i] && j <= 19 - towerB[i])
-                    {
-                        Console.Write(" ");
-                    }
-                    if(j > 19-towerB[i] && j <= 20 + towerB[i] && j != 20)
-                    {
-                        Console.Write("*");
-                    }
-                    if(j > 20+towerB[i] && j <= 32- towerC[i])
-                    {
-                        Console.Write(" ");
-                    }
-                    if(j > 32 - towerC[i] && j <=33+ towerC[i] && j !=33)
-                    {
-                        Console.Write("*");
-                    }
-                    if(j > 33+towerC[i] && j < 39)
-                    {
-                        Console.Write(" ");
-                    }
-                    if(j == 7 || j == 20 || j == 33)
-                    {
-                        Console.Write("|");
-                    }
-                    if(j == 39)
-                    {
-                        Console.WriteLine(" ");
-                    }
+                    Console.Write(" ");
                 }
+                if(i>=maxdisknumber-disktodraw+1 && i<=maxdisknumber+disktodraw+1 && i != maxdisknumber+1)
+                {
+                    Console.Write("*");
+                }
+                if(i==maxdisknumber+1)
+                {
+                    Console.Write("|");
+                }
+            }
+        }
+
+        static int FindFirstNonzero(int[] tower)
+        {
+            int number = 0;
+            for(int i = 0; i < tower.Length; i++)
+            {
+                if(tower[i] != 0)
+                {
+                    number = i;
+                    break;
+                }
+            }
+            return number;
+        }
+
+        static int FindLastZero(int[] tower)
+        {
+            int number = 0;
+            for(int i = tower.Length-1; i >= 0; i--)
+            {
+                if(tower[i] == 0)
+                {
+                    number = i;
+                    break;
+                }
+            }
+            return number;
+        }
+
+        static void MoveDisk(int n, int disk, int[] from, int[] via, int[] to, int[] towerA, int[] towerB, int[] towerC, ref int move)
+        {
+            if(n==1)
+            {
+                to[FindLastZero(to)] = from[FindFirstNonzero(from)];
+                from[FindFirstNonzero(from)] = 0;
+                move++;
+                Console.WriteLine(move);
+                DrawHanoi(disk, towerA, towerB, towerC);
+            }
+            else
+            {
+                MoveDisk(n - 1,disk, from, to, via, towerA, towerB, towerC, ref move);
+                to[FindLastZero(to)] = from[FindFirstNonzero(from)];
+                from[FindFirstNonzero(from)] = 0;
+                move++;
+                Console.WriteLine(move);
+                DrawHanoi(disk, towerA, towerB, towerC);
+                MoveDisk(n - 1,disk, via, from, to,towerA, towerB, towerC, ref move);
             }
         }
     }
