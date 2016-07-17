@@ -57,7 +57,7 @@ namespace ConsoleApplication2
             }
         }
 
-        public void DrawHanoi(int n, int[] towerA, int[] towerB, int[] towerC)
+        private void DrawHanoi(int n, int[] towerA, int[] towerB, int[] towerC)
         {
             for (int i = 0; i < n; i++)
             {
