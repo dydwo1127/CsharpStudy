@@ -6,36 +6,68 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication2
 {
+    public class Tower
+    {
+        private readonly int maxDisk;
+        public int[] disks { get; private set; }
+        public void InsertAll()
+        {
+            for (int i = 0; i < maxDisk; i++)
+            {
+                disks[i] = i + 1;
+            }
+        }
+        public Tower(int maxDisk)
+        {
+            this.maxDisk = maxDisk;
+            disks = new int[maxDisk];
+        }
+        public int RemoveDisk()
+        {
+            int temp = 0;
+            for(int i = 0; i<maxDisk; i++)
+            {
+                if(disks[i] != 0)
+                {
+                    temp = disks[i];
+                    disks[i] = 0;
+                    break;
+                }
+            }
+            return temp;
+        }
+        public void InsertDisk(int size)
+        {
+            for(int i = maxDisk -1; i >= 0; i--)
+            {
+                if(disks[i] == 0)
+                {
+                    disks[i] = size;
+                    break;
+                }
+            }
+        }
+    }
     public class Hanoi
     {
-        public int NumOfDisk { get; private set; }
-        private int move;
-        public int Move
-        {
-            get { return move; }
-            set { move = value; }
-        }
-
-        private int[] towerA;
-        private int[] towerB;
-        private int[] towerC;
+        private Tower towerA;
+        private Tower towerB;
+        private Tower towerC;
+        private int maxDiskNumber;
+        private int move = 0;
 
         public Hanoi(int numofDisk)
         {
-            NumOfDisk = numofDisk;
-            towerA = new int[numofDisk];
-            towerB = new int[numofDisk];
-            towerC = new int[numofDisk];
-            for (int i = 0; i < numofDisk; i++)
-            {
-                towerA[i] = i + 1;
-            }
-            Move = 0;
+            towerA = new Tower(numofDisk);
+            towerB = new Tower(numofDisk);
+            towerC = new Tower(numofDisk);
+            towerA.InsertAll();
+            maxDiskNumber = numofDisk;
         }
         public void Run()
         {
-            DrawHanoi(NumOfDisk, towerA, towerB, towerC);
-            MoveDisk(NumOfDisk, NumOfDisk, towerA, towerB, towerC, towerA, towerB, towerC, ref move);
+            DrawHanoi(maxDiskNumber, towerA, towerB, towerC);
+            MoveDisk(maxDiskNumber, maxDiskNumber, towerA,towerB,towerC,towerA,towerB,towerC);
         }
 
         private void DrawOneDisk(int maxdisknumber, int disktodraw)
@@ -57,61 +89,33 @@ namespace ConsoleApplication2
             }
         }
 
-        private void DrawHanoi(int n, int[] towerA, int[] towerB, int[] towerC)
+        private void DrawHanoi(int n, Tower towerA, Tower towerB, Tower towerC)
         {
             for (int i = 0; i < n; i++)
             {
-                DrawOneDisk(n, towerA[i]);
-                DrawOneDisk(n, towerB[i]);
-                DrawOneDisk(n, towerC[i]);
+                DrawOneDisk(n, towerA.disks[i]);
+                DrawOneDisk(n, towerB.disks[i]);
+                DrawOneDisk(n, towerC.disks[i]);
                 Console.WriteLine("");
             }
         }
-        private int FindFirstNonzero(int[] tower)
-        {
-            int number = 0;
-            for (int i = 0; i < tower.Length; i++)
-            {
-                if (tower[i] != 0)
-                {
-                    number = i;
-                    break;
-                }
-            }
-            return number;
-        }
-        private int FindLastZero(int[] tower)
-        {
-            int number = 0;
-            for (int i = tower.Length - 1; i >= 0; i--)
-            {
-                if (tower[i] == 0)
-                {
-                    number = i;
-                    break;
-                }
-            }
-            return number;
-        }
-        private void MoveDisk(int n, int disk, int[] from, int[] via, int[] to, int[] towerA, int[] towerB, int[] towerC, ref int move)
+        private void MoveDisk(int n, int disk, Tower from, Tower via, Tower to, Tower towerA, Tower towerB, Tower towerC)
         {
             if (n == 1)
             {
-                to[FindLastZero(to)] = from[FindFirstNonzero(from)];
-                from[FindFirstNonzero(from)] = 0;
+                to.InsertDisk(from.RemoveDisk());
                 move++;
                 Console.WriteLine(move);
                 DrawHanoi(disk, towerA, towerB, towerC);
             }
             else
             {
-                MoveDisk(n - 1, disk, from, to, via, towerA, towerB, towerC, ref move);
-                to[FindLastZero(to)] = from[FindFirstNonzero(from)];
-                from[FindFirstNonzero(from)] = 0;
+                MoveDisk(n - 1, disk, from, to, via, towerA, towerB, towerC);
+                to.InsertDisk(from.RemoveDisk());
                 move++;
                 Console.WriteLine(move);
                 DrawHanoi(disk, towerA, towerB, towerC);
-                MoveDisk(n - 1, disk, via, from, to, towerA, towerB, towerC, ref move);
+                MoveDisk(n - 1, disk, via, from, to, towerA, towerB, towerC);
             }
         }
     }
